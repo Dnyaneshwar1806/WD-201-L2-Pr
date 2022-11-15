@@ -1,92 +1,56 @@
-const todoList = () => {
-  all = []
-  const add = (todoItem) => {
-    all.push(todoItem)
+const http = require("http");
+const fs = require("fs");
+const args = require('minimist')(process.argv.slice(2));
+
+let homeContent = "";
+let projectContent = "";
+let registrationContent = "";
+let formstylecontent = "";
+
+fs.readFile("home.html", (err, home) => {
+  if (err) {
+    throw err;
   }
-  const markAsComplete = (index) => {
-    all[index].completed = true
+  homeContent = home;
+});
+
+fs.readFile("project.html", (err, project) => {
+  if (err) {
+    throw err;
   }
-  const overdue = (a) => {
-    return all.filter((item) => {
-      return item.dueDate <= yesterday && item.completed === false
-    })
-  }
-
-  const dueToday = (b) => {
-    return all.filter((item) => {
-      return item.dueDate === today
-    })
-  }
-
-  const dueLater = (c) => {
-    return all.filter((item) => {
-      return item.dueDate >= tomorrow
-    })
-  }
-  const toDisplayableList = (list) => {
-    let showItem = []
-    list.forEach((item) => {
-      if (item.dueDate === today) {
-        if (item.completed === true) {
-          showItem.push(`[x] ${item.title}`)
-        } else {
-          showItem.push(`[ ] ${item.title}`)
-        }
-      } else {
-        if (item.completed === true) {
-          showItem.push(`[x] ${item.title} ${item.dueDate}`)
-        } else {
-          showItem.push(`[ ] ${item.title} ${item.dueDate}`)
-        }
-      }
-    })
-    return showItem.join('\n')
-  }
-
-  return { all, add, markAsComplete, overdue, dueToday, dueLater, toDisplayableList }
-}
-
-// ####################################### #
-// DO NOT CHANGE ANYTHING BELOW THIS LINE. #
-// ####################################### #
-
-const todos = todoList();
-
-const formattedDate = d => {
-  return d.toISOString().split("T")[0]
-}
-
-var dateToday = new Date()
-const today = formattedDate(dateToday)
-const yesterday = formattedDate(
-  new Date(new Date().setDate(dateToday.getDate() - 1))
-)
-const tomorrow = formattedDate(
-  new Date(new Date().setDate(dateToday.getDate() + 1))
-)
-
-todos.add({ title: 'Submit assignment', dueDate: yesterday, completed: false })
-todos.add({ title: 'Pay rent', dueDate: today, completed: true })
-todos.add({ title: 'Service Vehicle', dueDate: today, completed: false })
-todos.add({ title: 'File taxes', dueDate: tomorrow, completed: false })
-todos.add({ title: 'Pay electric bill', dueDate: tomorrow, completed: false })
-
-console.log("My Todo-list\n\n")
-
-console.log("Overdue")
-var overdues = todos.overdue()
-var formattedOverdues = todos.toDisplayableList(overdues)
-console.log(formattedOverdues)
-console.log("\n\n")
-
-console.log("Due Today")
-let itemsDueToday = todos.dueToday()
-let formattedItemsDueToday = todos.toDisplayableList(itemsDueToday)
-console.log(formattedItemsDueToday)
-console.log("\n\n")
-
-console.log("Due Later")
-let itemsDueLater = todos.dueLater()
-let formattedItemsDueLater = todos.toDisplayableList(itemsDueLater)
-console.log(formattedItemsDueLater)
-console.log("\n\n")
+  projectContent = project;
+});
+fs.readFile("registration.html",(err, registration) => {
+    if (err){
+        throw err;
+    }
+    registrationContent = registration;
+});
+fs.readFile("formstyle.js", (err, formstyle) => {
+    if (err){
+        throw err;
+    }
+    formstylecontent = formstyle;
+})
+http.createServer((request, response) => {
+    let url = request.url;
+    response.writeHeader(200, { "Content-Type": "text/html" });
+    switch (url) {
+        case "/project":
+            response.write(projectContent);
+            response.end();
+            break;
+        case "/registration":
+            response.write(registrationContent);
+            response.end();
+            break;
+        case "/formstyle":
+            response.write(formstylecontent);
+            response.end();
+            break;
+        default:
+            response.write(homeContent);
+            response.end();
+            break;
+    }
+}).listen(args.port);
