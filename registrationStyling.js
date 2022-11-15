@@ -1,9 +1,9 @@
-/* eslint-disable quotes */
 let userForm = document.getElementById("user-form");
-var userEntries = [];
+var userentries = [];
 
+let errors = [];
 const retieveEntries = () => {
-  let entries = localStorage.getItem("userEntries");
+  let entries = localStorage.getItem("userentries");
   if (entries) {
     entries = JSON.parse(entries);
   } else {
@@ -13,8 +13,7 @@ const retieveEntries = () => {
 };
 const displayEntries = () => {
   let entries = retieveEntries();
-  const tbleEntries = entries
-    .map((entry) => {
+  const tableEntries = entries.map((entry) => {
       const nameCell = `<td class='border px-4 py-2'>${entry.name}</td>`;
       const emailCell = `<td class='border px-4 py-2'>${entry.email}</td>`;
       const passwordCell = `<td class='border px-4 py-2'>${entry.password}</td>`;
@@ -31,13 +30,13 @@ const displayEntries = () => {
     <th class='px-4 py-2 '>Password </th>
     <th class='px-4 py-2 '>Dob </th>
     <th class='px-4 py-2 '>Accepted terms? </th>
-    </tr>${tbleEntries}
+    </tr>${tableEntries}
 </table>`;
   let details = document.getElementById("user-entries");
   details.innerHTML = table;
 };
 
-const saveUserForm = (event) => {
+const saveuserform = (event) => {
   event.preventDefault();
   const name = document.getElementById("name").value;
   const email = document.getElementById("email").value;
@@ -50,8 +49,8 @@ const saveUserForm = (event) => {
   var age = currentYear - year;
   console.log({ age, currentYear, birthYear });
   if (age < 18 || age > 55) {
-    document.getElementById("dob").style = "border:1px solid red";
-    return alert("Your is not under 18 and 55 years");
+    document.getElementById("dob").style = "border:1px solid green";
+    return alert("Your age is not under 18 and 55 years");
   } else {
     document.getElementById("dob").style = "border:none";
 
@@ -62,12 +61,12 @@ const saveUserForm = (event) => {
       dob,
       acceptTerms,
     };
-    userEntries = retieveEntries();
-    userEntries.push(entry);
-    localStorage.setItem("userEntries", JSON.stringify(userEntries));
+    userentries = retieveEntries();
+    userentries.push(entry);
+    localStorage.setItem("userentries", JSON.stringify(userentries));
     displayEntries();
     userForm.reset();
   }
 };
-userForm.addEventListener("submit", saveUserForm);
+userForm.addEventListener("submit", saveuserform);
 displayEntries();
